@@ -1,0 +1,3 @@
+[submodule "Roll-a-ball/Assets/ROSBridgeLib"]
+	path = Roll-a-ball/Assets/ROSBridgeLib
+	url = https://github.com/MathiasCiarlo/ROSBridgeLib.git
