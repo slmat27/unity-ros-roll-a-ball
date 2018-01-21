@@ -1,0 +1,11 @@
+<launch>
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+		<arg name="port" value="9090"/>
+	</include>
+
+	<rosparam command="load" file="$(find ros_unity_roll_a_ball)/launch/ros_unity_roll_a_ball_config.yaml" />
+
+	<node pkg="ros_unity_roll_a_ball" type="ros_unity_roll_a_ball" name="ros_unity_roll_a_ball" output="screen"/>
+	
+</launch>
+

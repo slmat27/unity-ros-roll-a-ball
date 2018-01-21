@@ -1,0 +1,9 @@
+# ros_unity_roll_a_ball configuration file
+
+# flag for activating or deactivating debug printing
+debug_flag: true
+
+# player speed
+player_speed: 10
+
+
