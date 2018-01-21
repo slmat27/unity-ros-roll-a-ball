@@ -1,35 +1,70 @@
-﻿using ROSBridgeLib;
-using UnityEngine;
+﻿using UnityEngine;
+using ROSBridgeLib;
+using ROSBridgeLib.geometry_msgs;
+using ROSBridgeLib.std_msgs;
 
 public class ROSController : MonoBehaviour
 {
-    private ROSBridgeWebSocketConnection ros = null;
+	// ros bridge websocket connection parameter
+	private ROSBridgeWebSocketConnection ros = null;
 
-    void Start()
-    {
-        // Where the rosbridge instance is running, could be localhost, or some external IP
-        ros = new ROSBridgeWebSocketConnection("ws://localhost", 9090);
+	// game object for the player
+	public GameObject player;
 
-        // Add subscribers and publishers (if any)
-        ros.AddSubscriber(typeof(BallPoseSubscriber));
-        ros.AddPublisher(typeof(BallControlPublisher));
+	// player controller script
+	public PlayerController playerController;
 
-        // Fire up the subscriber(s) and publisher(s)
-        ros.Connect();
-    }
+	// it is called once the object is active
+	void Start()
+	{
+		// connect to the rosbridge instance, default are: localhost & 9090
+		ros = new ROSBridgeWebSocketConnection("ws://localhost", 9090);
 
-    // Extremely important to disconnect from ROS, otherwise packets continue to flow
-    void OnApplicationQuit()
-    {
-        if (ros != null)
-        {
-            ros.Disconnect();
-        }
-    }
+		// add subscribers and publishers 
+		ros.AddSubscriber(typeof(BallSpeedSubscriber));
+		ros.AddPublisher(typeof(BallPosePublisher));
 
-    // Update is called once per frame in Unity
-    void Update()
-    {
-        ros.Render();
-    }
+		// fire up the subscriber(s) and publisher(s)
+		ros.Connect();
+	}
+
+	// it is called once the object is deactivated
+	void OnApplicationQuit()
+	{
+		// it is important to disconnect from ROS, otherwise packets continue to flow
+		if(ros != null)
+		{
+			ros.Disconnect();
+		}
+	}
+
+	// it is called every frame update
+	void Update()
+	{
+		// render the ros communication
+		ros.Render();
+
+		// get the player object position
+		double playerPosX = player.transform.position.x;
+		double playerPosY = player.transform.position.y;
+		double playerPosZ = player.transform.position.z;
+
+		// get the player position vector
+		Vector3Msg playerPositionVector = new Vector3Msg(playerPosX, playerPosY, playerPosZ);
+		// get the player rotation vector
+		Vector3Msg playerRotationVector = new Vector3Msg(0, 0, 0);
+
+		// get the twist message for the player pose
+		TwistMsg playerPoseMsg = new TwistMsg(playerPositionVector, playerRotationVector);
+
+		// publish the message
+		ros.Publish(BallPosePublisher.GetMessageTopic(), playerPoseMsg);
+
+		// get player speed
+		float playerSpeed = (float)BallSpeedSubscriber.playerSpeed;
+
+		// update player speed
+		playerController.speed = (playerSpeed == 0)? 1 : playerSpeed;
+	}
+
 }

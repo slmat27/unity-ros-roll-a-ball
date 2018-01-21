@@ -1,18 +1,17 @@
-﻿using ROSBridgeLib;
+﻿using SimpleJSON;
+using ROSBridgeLib;
 using ROSBridgeLib.geometry_msgs;
-using SimpleJSON;
 
-public class BallControlPublisher : ROSBridgePublisher
+public class BallPosePublisher : ROSBridgePublisher
 {
-    // The following three functions are important
     public new static string GetMessageTopic()
     {
-        return "/topic/to/publish/to";
+		return "player_pose";
     }
 
     public new static string GetMessageType()
     {
-        return "std_msgs/TwistMsg";
+		return "geometry_msgs/Twist";
     }
 
     public static string ToYAMLString(TwistMsg msg)
